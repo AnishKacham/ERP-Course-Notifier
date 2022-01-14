@@ -35,9 +35,7 @@ try:
         EC.presence_of_element_located((By.ID,"win0divPTNUI_LAND_REC_GROUPLET$2"))
     )
     console.success("[SUCCESS] : Logged In to ERP. Home Page Reached")
-    registrationPageBtn.click()
-    
-    
+    registrationPageBtn.click()   
 except:
     console.error("[TIMEOUT] : Page took too long to load Quitting . . .")
     
