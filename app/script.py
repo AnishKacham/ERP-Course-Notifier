@@ -36,15 +36,36 @@ try:
     driver.switch_to.window(windowHandles[1])
     console.success("[SUCCESS] : Logged In to ERP. Home Page Reached")
 
-    registrationPageBtn = WebDriverWait(driver,10).until(
+    registrationPageBtn = WebDriverWait(driver,30).until(
         EC.presence_of_element_located((By.ID,"win0divPTNUI_LAND_REC_GROUPLET$2"))
     )    
     registrationPageBtn.click()  
-    console.success("[SUCCESS] : Registration Page Reached") 
+    console.success("[SUCCESS] : Registration Page Reached")
 except:
     #TODO FINISH THIS LATER
     console.warn("[WARNING] : Couldn't fetch link. Using Hardcoded link . . .")
     #driver.get("https://sis.erp.bits-pilani.ac.in/psc/sisprd_newwin/EMPLOYEE/SA/c/NUI_FRAMEWORK.PT_AGSTARTPAGE_NUI.GBL?CONTEXTIDPARAMS=TEMPLATE_ID%3aPTPPNAVCOL&scname=ADMN_REGISTRATION&PTPPB_GROUPLET_ID=STUDENT_REGISTRATION&CRefName=ADMN_NAVCOLL_3")
+try:
+    #_ Hit Add Classes on the sidebar
+    console.log("[LOG] : Trying to fetch button from sidebar")
+    addClassesBtn = WebDriverWait(driver,30).until(
+        EC.presence_of_element_located((By.ID,"win4divPTGP_STEP_DVW_PTGP_STEP_BTN_GB$2"))
+    )
+    addClassesBtn.click()
+    console.log("[SUCCESS] : Add Classes Page Reached")
+except:
+    console.warn("[WARNING] : Clicking Add classes on sidebar failed")
+try:
+    #_ Hit search classes at the top bar
+    searchBtn = WebDriverWait(driver,30).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR,"#PSTAB > table > tbody > tr > td:nth-child(1) > a"))
+    )
+    searchBtn.click()
+    console.log("[SUCCESS] : Search for course page reached")
+except:
+    console.warn("[WARNING] : Clicking search in top bar failed")
+
+
     
 
 #* now we have to wait until the clicked page loads 
