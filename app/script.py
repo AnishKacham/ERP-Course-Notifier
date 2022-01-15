@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -45,25 +46,59 @@ except:
     #TODO FINISH THIS LATER
     console.warn("[WARNING] : Couldn't fetch link. Using Hardcoded link . . .")
     #driver.get("https://sis.erp.bits-pilani.ac.in/psc/sisprd_newwin/EMPLOYEE/SA/c/NUI_FRAMEWORK.PT_AGSTARTPAGE_NUI.GBL?CONTEXTIDPARAMS=TEMPLATE_ID%3aPTPPNAVCOL&scname=ADMN_REGISTRATION&PTPPB_GROUPLET_ID=STUDENT_REGISTRATION&CRefName=ADMN_NAVCOLL_3")
+#_ Hit Add Classes on the sidebar
 try:
-    #_ Hit Add Classes on the sidebar
     console.log("[LOG] : Trying to fetch button from sidebar")
-    addClassesBtn = WebDriverWait(driver,30).until(
-        EC.presence_of_element_located((By.ID,"win4divPTGP_STEP_DVW_PTGP_STEP_BTN_GB$2"))
+    printPage = WebDriverWait(driver,30).until(
+        EC.presence_of_element_located((By.ID,"DERIVED_SSR_FL_PRINT_BUTTON"))
     )
+    addClassesBtn = driver.find_element_by_id("win7divPTGP_STEP_DVW_PTGP_STEP_BTN_GB$2")
     addClassesBtn.click()
-    console.log("[SUCCESS] : Add Classes Page Reached")
+    console.success("[SUCCESS] : Add Classes Page Reached")
 except:
     console.warn("[WARNING] : Clicking Add classes on sidebar failed")
+    console.warn("[WARNING] : Using Hardcoded link . . .")
+    driver.get("https://sis.erp.bits-pilani.ac.in/psc/sisprd_newwin/EMPLOYEE/SA/c/SA_LEARNER_SERVICES.SSR_SSENRL_CART.GBL?NavColl=true")
+    console.success("[SUCCESS] : Add Classes Page Reached through Hard Link")
+#_ Hit search classes at the top bar
 try:
-    #_ Hit search classes at the top bar
     searchBtn = WebDriverWait(driver,30).until(
         EC.presence_of_element_located((By.CSS_SELECTOR,"#PSTAB > table > tbody > tr > td:nth-child(1) > a"))
     )
     searchBtn.click()
-    console.log("[SUCCESS] : Search for course page reached")
+    console.success("[SUCCESS] : Search for course page reached")
 except:
     console.warn("[WARNING] : Clicking search in top bar failed")
+
+#_ Fill in the search field
+try:
+    subjSearch = WebDriverWait(driver,30).until(
+        EC.presence_of_element_located((By.ID,"SSR_CLSRCH_WRK_SUBJECT_SRCH$0"))
+    )
+    subjSearch = Select(driver.find_element_by_id("SSR_CLSRCH_WRK_SUBJECT_SRCH$0"))
+    console.info("[INFO] : Filling in Subject . . .")
+    subjSearch.select_by_visible_text("IS")
+    subjCodeInput = driver.find_element_by_id("SSR_CLSRCH_WRK_CATALOG_NBR$1")
+    console.info("[INFO] : Filling in Course code . . .")
+    subjCodeInput.send_keys("F341")
+    subjCodeInput.send_keys(Keys.RETURN)
+    console.success("[SUCCESS] : Search Success")
+    console.info("[INFO] : Navigating to course details")
+except:
+    console.warn("[WARNING] : Failed to get search subject field")
+#_ Navigate to course details
+try:
+    subjDeets = WebDriverWait(driver,30).until(
+        EC.presence_of_element_located((By.ID,"MTG_CLASSNAME$0"))
+    )
+    subjDeets.click()
+    console.success("[SUCCESS] : Reached Subject Details Page")
+except:
+    console.warn("[WARNING] : Couldn't find details link ")
+#_ Fetch available seats count
+
+
+
 
 
     
