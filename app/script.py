@@ -15,7 +15,7 @@ PATH = "/home/anish/environments/selen/chromedriver"
 chromium_options = Options()
 chromium_options.add_argument("--user-data-dir=/home/anish/enivronments/selen/app/userdata") #* This will be an empty folder initially 
 #* and cookie will be sotred here for later use
-# chromium_options.add_argument("--headless")
+chromium_options.add_argument("--headless")
 
 #_ start the webdriver
 driver = webdriver.Chrome(PATH,options=chromium_options)
@@ -70,6 +70,16 @@ try:
 except:
     console.warn("[WARNING] : Clicking search in top bar failed")
 
+#_ Uncheck the "show only open classes checkbox"
+try:
+    checkBox = WebDriverWait(driver,30).until(
+        EC.presence_of_element_located((By.ID,"SSR_CLSRCH_WRK_SSR_OPEN_ONLY$3"))
+    )
+    checkBox.click()
+    console.success("[SUCCESS] : Show only open classes unchecked")
+except:
+    console.warn("[WARNING] : Showing only open classes is still checked")
+
 #_ Fill in the search field
 try:
     subjSearch = WebDriverWait(driver,30).until(
@@ -77,10 +87,10 @@ try:
     )
     subjSearch = Select(driver.find_element_by_id("SSR_CLSRCH_WRK_SUBJECT_SRCH$0"))
     console.info("[INFO] : Filling in Subject . . .")
-    subjSearch.select_by_visible_text("IS")
+    subjSearch.select_by_visible_text("BITS")
     subjCodeInput = driver.find_element_by_id("SSR_CLSRCH_WRK_CATALOG_NBR$1")
     console.info("[INFO] : Filling in Course code . . .")
-    subjCodeInput.send_keys("F341")
+    subjCodeInput.send_keys("F464")
     subjCodeInput.send_keys(Keys.RETURN)
     console.success("[SUCCESS] : Search Success")
     console.info("[INFO] : Navigating to course details")
@@ -96,11 +106,19 @@ try:
 except:
     console.warn("[WARNING] : Couldn't find details link ")
 #_ Fetch available seats count
-
-
-
-
-
+try:
+    availSeats = WebDriverWait(driver,30).until(
+        EC.presence_of_element_located((By.ID,"SSR_CLS_DTL_WRK_AVAILABLE_SEATS"))
+    )
+    console.success("[SUCCESS] : Fetched number of available seats")
+    console.success(availSeats.text,severe=True)
+    noOfavailSeats = int(availSeats.text)
+    while noOfavailSeats > 0:
+        console.error("[NOOB GET HERE]")
+        time.sleep(2)
+        driver.refresh()
+except:
+    console.warn("[WARNING] : Couldn't fetch available seats row")
     
 
 #* now we have to wait until the clicked page loads 
