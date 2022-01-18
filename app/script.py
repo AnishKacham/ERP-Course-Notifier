@@ -24,7 +24,7 @@ chromium_options.add_argument("--user-data-dir=/home/anish/environments/selen/ap
 
 #_ User inputs
 song = '/home/anish/environments/selen/app/beep-07a.wav'
-courses = ["BITS F314","ECON F354","FIN F313"]
+courses = ["IS F341"]
 threads =[]
 
 #_ Thread And Related Functions
@@ -39,6 +39,15 @@ def threadSpawner(courses):
 
 def courseSearch(course):
     courseCode = course.split()
+    #_ Uncheck the "show only open classes checkbox"
+    try:
+        checkBox = WebDriverWait(driver,30).until(
+            EC.presence_of_element_located((By.ID,"SSR_CLSRCH_WRK_SSR_OPEN_ONLY$3"))
+        )
+        checkBox.click()
+        console.success("[SUCCESS] : Show only open classes unchecked")
+    except:
+        console.warn("[WARNING] : Showing only open classes is still checked")
     #_ Fill in the search field
     try:
         subjSearch = WebDriverWait(driver,30).until(
@@ -136,16 +145,6 @@ try:
     console.success("[SUCCESS] : Search for course page reached")
 except:
     console.warn("[WARNING] : Clicking search in top bar failed")
-
-#_ Uncheck the "show only open classes checkbox"
-try:
-    checkBox = WebDriverWait(driver,30).until(
-        EC.presence_of_element_located((By.ID,"SSR_CLSRCH_WRK_SSR_OPEN_ONLY$3"))
-    )
-    checkBox.click()
-    console.success("[SUCCESS] : Show only open classes unchecked")
-except:
-    console.warn("[WARNING] : Showing only open classes is still checked")
 
 #_ Get the seats in the courses
 while(1):
