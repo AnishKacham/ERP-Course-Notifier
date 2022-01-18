@@ -1,3 +1,4 @@
+from unicodedata import name
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
@@ -6,16 +7,82 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from py_console import console
+from playsound import playsound
 import time
+import threading
+import os
+        
 
 #_ path for the webdriver
 PATH = "/home/anish/environments/selen/chromedriver"
 
 #_ options before starting the task
 chromium_options = Options()
-chromium_options.add_argument("--user-data-dir=/home/anish/enivronments/selen/app/userdata") #* This will be an empty folder initially 
+chromium_options.add_argument("--user-data-dir=/home/anish/environments/selen/app/userdata") #* This will be an empty folder initially 
 #* and cookie will be sotred here for later use
-chromium_options.add_argument("--headless")
+# chromium_options.add_argument("--headless")
+
+#_ User inputs
+song = '/home/anish/environments/selen/app/beep-07a.wav'
+courses = ["BITS F314","ECON F354","FIN F313"]
+threads =[]
+
+#_ Thread And Related Functions
+def threadSpawner(courses):
+    for course in courses :
+        console.info(f"[INFO] : Creating thread for {course}")
+        t = threading.Thread(name=course,target=courseSearch,args=(course,))
+        threads.append(t)
+        t.start()
+        t.join()
+        driver.refresh()
+
+def courseSearch(course):
+    courseCode = course.split()
+    #_ Fill in the search field
+    try:
+        subjSearch = WebDriverWait(driver,30).until(
+            EC.presence_of_element_located((By.ID,"SSR_CLSRCH_WRK_SUBJECT_SRCH$0"))
+        )
+        subjSearch = Select(driver.find_element_by_id("SSR_CLSRCH_WRK_SUBJECT_SRCH$0"))
+        console.info("[INFO] : Filling in Subject . . .")
+        subjSearch.select_by_visible_text(courseCode[0])
+        subjCodeInput = driver.find_element_by_id("SSR_CLSRCH_WRK_CATALOG_NBR$1")
+        console.info("[INFO] : Filling in Course code . . .")
+        subjCodeInput.send_keys(courseCode[1])
+        subjCodeInput.send_keys(Keys.RETURN)
+        console.success("[SUCCESS] : Search Success")
+        console.info("[INFO] : Navigating to course details")
+
+    except:
+        console.warn("[WARNING] : Failed to fetch course search field")
+    
+    #_ Navigate to course details
+    try:
+        subjDeets = WebDriverWait(driver,30).until(
+            EC.presence_of_element_located((By.ID,"MTG_CLASSNAME$0"))
+        )
+        subjDeets.click()
+        console.success("[SUCCESS] : Reached Subject Details Page")
+    except:
+        console.warn("[WARNING] : Couldn't find details link ")
+    #_ Fetch available seats count
+    try:
+        availSeats = WebDriverWait(driver,30).until(
+            EC.presence_of_element_located((By.ID,"SSR_CLS_DTL_WRK_AVAILABLE_SEATS"))
+        )
+        console.success("[SUCCESS] : Fetched number of available seats")
+        noOfavailSeats = int(availSeats.text)
+        console.success(noOfavailSeats,severe=True)
+        if noOfavailSeats > 0:
+            for i in range(4):
+                playsound(song)
+                time.sleep(0.5)
+            console.success(f"[ALERT] : {course} is open",severe=True)
+
+    except:
+        console.warn("[WARNING] : Couldn't fetch available seats row")
+
 
 #_ start the webdriver
 driver = webdriver.Chrome(PATH,options=chromium_options)
@@ -80,64 +147,6 @@ try:
 except:
     console.warn("[WARNING] : Showing only open classes is still checked")
 
-#_ Fill in the search field
-try:
-    subjSearch = WebDriverWait(driver,30).until(
-        EC.presence_of_element_located((By.ID,"SSR_CLSRCH_WRK_SUBJECT_SRCH$0"))
-    )
-    subjSearch = Select(driver.find_element_by_id("SSR_CLSRCH_WRK_SUBJECT_SRCH$0"))
-    console.info("[INFO] : Filling in Subject . . .")
-    subjSearch.select_by_visible_text("BITS")
-    subjCodeInput = driver.find_element_by_id("SSR_CLSRCH_WRK_CATALOG_NBR$1")
-    console.info("[INFO] : Filling in Course code . . .")
-    subjCodeInput.send_keys("F464")
-    subjCodeInput.send_keys(Keys.RETURN)
-    console.success("[SUCCESS] : Search Success")
-    console.info("[INFO] : Navigating to course details")
-except:
-    console.warn("[WARNING] : Failed to get search subject field")
-#_ Navigate to course details
-try:
-    subjDeets = WebDriverWait(driver,30).until(
-        EC.presence_of_element_located((By.ID,"MTG_CLASSNAME$0"))
-    )
-    subjDeets.click()
-    console.success("[SUCCESS] : Reached Subject Details Page")
-except:
-    console.warn("[WARNING] : Couldn't find details link ")
-#_ Fetch available seats count
-try:
-    availSeats = WebDriverWait(driver,30).until(
-        EC.presence_of_element_located((By.ID,"SSR_CLS_DTL_WRK_AVAILABLE_SEATS"))
-    )
-    console.success("[SUCCESS] : Fetched number of available seats")
-    console.success(availSeats.text,severe=True)
-    noOfavailSeats = int(availSeats.text)
-    while noOfavailSeats > 0:
-        console.error("[NOOB GET HERE]")
-        time.sleep(2)
-        driver.refresh()
-except:
-    console.warn("[WARNING] : Couldn't fetch available seats row")
-    
-
-#* now we have to wait until the clicked page loads 
-#* hence we use a try and except statement
-# try:
-#     beginnerpytut = WebDriverWait(driver,10).until(
-#         EC.presence_of_element_located((By.LINK_TEXT,"Beginner Python Tutorials"))
-#     )
-#     beginnerpytut.click()
-
-#     getstarted = WebDriverWait(driver,10).until(
-#         EC.presence_of_element_located((By.ID,"sow-button-19310003"))
-#     )
-#     getstarted.click()
-#     driver.back()
-#     driver.back()
-#     driver.back()
-#     driver.forward()
-#     driver.forward()
-#     print("DONE NAVIGATING")
-# except:
-#     driver.quit()
+#_ Get the seats in the courses
+while(1):
+    threadSpawner(courses)
