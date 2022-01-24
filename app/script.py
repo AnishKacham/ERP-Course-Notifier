@@ -24,7 +24,7 @@ chromium_options.add_argument("--user-data-dir=/home/anish/environments/selen/ap
 
 #_ User inputs
 song = '/home/anish/environments/selen/app/beep-07a.wav'
-courses = ["IS F341"]
+courses = ["HSS F346","HSS F363"]
 threads =[]
 
 #_ Thread And Related Functions
@@ -125,10 +125,10 @@ except:
 #_ Hit Add Classes on the sidebar
 try:
     console.log("[LOG] : Trying to fetch button from sidebar")
-    printPage = WebDriverWait(driver,30).until(
-        EC.presence_of_element_located((By.ID,"DERIVED_SSR_FL_PRINT_BUTTON"))
+    addClassesBtn = WebDriverWait(driver,30).until(
+        EC.presence_of_element_located((By.XPATH,"/html/body/form/div[2]/div[4]/div[1]/div/div[2]/div[1]/div/div/div/div[2]/div[2]/div/div[2]/div/ul/li[3]/div[2]/div"))
     )
-    addClassesBtn = driver.find_element_by_id("win7divPTGP_STEP_DVW_PTGP_STEP_BTN_GB$2")
+    # addClassesBtn = driver.find_element_by_xpath("/html/body/form/div[2]/div[4]/div[1]/div/div[2]/div[1]/div/div/div/div[2]/div[2]/div/div[2]/div/ul/li[3]/div[2]/div")
     addClassesBtn.click()
     console.success("[SUCCESS] : Add Classes Page Reached")
 except:
@@ -138,13 +138,15 @@ except:
     console.success("[SUCCESS] : Add Classes Page Reached through Hard Link")
 #_ Hit search classes at the top bar
 try:
-    searchBtn = WebDriverWait(driver,30).until(
+    searchBtn = WebDriverWait(driver,10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR,"#PSTAB > table > tbody > tr > td:nth-child(1) > a"))
     )
     searchBtn.click()
     console.success("[SUCCESS] : Search for course page reached")
 except:
     console.warn("[WARNING] : Clicking search in top bar failed")
+    console.info("[INFO] : Using Hard Coded Link . . .")
+    driver.get("https://sis.erp.bits-pilani.ac.in/psc/sisprd/EMPLOYEE/SA/c/SA_LEARNER_SERVICES.CLASS_SEARCH.GBL?Page=SSR_CLSRCH_ENTRY&Action=U&ACAD_CAREER=CAR&EMPLID=41120190091&ENRL_REQUEST_ID=&INSTITUTION=INST&STRM=TERM")
 
 #_ Get the seats in the courses
 while(1):
