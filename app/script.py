@@ -14,17 +14,18 @@ import os
         
 
 #_ path for the webdriver
-PATH = "/home/anish/environments/selen/chromedriver"
+PATH = "/home/anish/source/ERP-Course-Notifier/chromedriver"
 
 #_ options before starting the task
 chromium_options = Options()
-chromium_options.add_argument("--user-data-dir=/home/anish/environments/selen/app/userdata") #* This will be an empty folder initially 
+chromium_options.binary_location = '/usr/bin/brave' #* Comment out if not using brave browser
+chromium_options.add_argument("--user-data-dir=/home/anish/source/ERP-Course-Notifier/app/userdata") #* This will be an empty folder initially 
 #* and cookie will be sotred here for later use
 # chromium_options.add_argument("--headless")
 
 #_ User inputs
-song = '/home/anish/environments/selen/app/beep-07a.wav'
-courses = ["HSS F346","HSS F363"]
+song = '/home/anish/source/ERP-Course-Notifier/app/beep-07a.wav'
+courses = ["HSS F346"]
 threads =[]
 
 #_ Thread And Related Functions
